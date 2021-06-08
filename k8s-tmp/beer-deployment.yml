@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: beer
+  name: beer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beer
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: beer
+    spec:
+      containers:
+      - image: springframeworkguru/kbe-brewery-beer-service
+        name: kbe-brewery-beer-service
+        resources: {}
+        env:
+          -   name: SPRING_DATASOURCE_USER
+              value: root
+          -   name: SPRING_DATASOURCE_PASSWORD
+              value: dbpassword
+          -   name: SPRING_JPA_HIBERNATE_DDL-AUTO
+              value: update
+          -   name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+          -   name: SPRING_ARTEMIS_HOST
+              value: jms
+          -   name: SFG_BREWERY_BEER-INVENTORY-SERVICE-HOST
+              value: http://inventory:8082
+status: {}

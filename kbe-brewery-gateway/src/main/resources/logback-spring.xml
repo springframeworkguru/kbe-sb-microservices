@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    ​
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <!-- Example for logging into the build folder of your project -->
+    <!--    <property name="LOG_FILE" value="${BUILD_FOLDER:-build}/${springAppName}"/>​-->
+
+    <!-- You can override this to have a custom pattern -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <!-- Appender to log to console in a JSON format -->
+    <appender name="jsonConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <version/>
+                <logLevel/>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <context/>
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                        <maxLength>2048</maxLength>
+                        <shortenedClassNameLength>20</shortenedClassNameLength>
+                        <rootCauseFirst>true</rootCauseFirst>
+                        <inlineHash>false</inlineHash>
+                        <!-- generated class names -->
+                        <exclude>\$\$FastClassByCGLIB\$\$</exclude>
+                        <exclude>\$\$EnhancerBySpringCGLIB\$\$</exclude>
+                        <exclude>^sun\.reflect\..*\.invoke</exclude>
+                        <!-- JDK internals -->
+                        <exclude>^com\.sun\.</exclude>
+                        <exclude>^sun\.net\.</exclude>
+                        <!-- dynamic invocation -->
+                        <exclude>^net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+                        <exclude>^org\.springframework\.cglib\.</exclude>
+                        <exclude>^org\.springframework\.transaction\.</exclude>
+                        <exclude>^org\.springframework\.validation\.</exclude>
+                        <exclude>^org\.springframework\.app\.</exclude>
+                        <exclude>^org\.springframework\.aop\.</exclude>
+                        <exclude>^java\.lang\.reflect\.Method\.invoke</exclude>
+                        <!-- Spring plumbing -->
+                        <exclude>^org\.springframework\.ws\..*\.invoke</exclude>
+                        <exclude>^org\.springframework\.ws\.transport\.</exclude>
+                        <exclude>^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.</exclude>
+                        <exclude>^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.</exclude>
+                        <exclude>^org\.springframework\.web\.filter\.</exclude>
+                        <!-- Tomcat internals -->
+                        <exclude>^org\.apache\.tomcat\.</exclude>
+                        <exclude>^org\.apache\.catalina\.</exclude>
+                        <exclude>^org\.apache\.coyote\.</exclude>
+                        <exclude>^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker</exclude>
+                        <exclude>^java\.lang\.Thread\.run$</exclude>
+                    </throwableConverter>
+                </stackTrace>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                            "trace": {
+                                "trace_id": "%mdc{traceId}",
+                                "span_id": "%mdc{spanId}",
+                                "parent_span_id": "%mdc{parentId}",
+                                "exportable": "%mdc{sampled}"
+                            }
+                        }
+                    </pattern>
+                </pattern>
+                <mdc>
+                    <excludeMdcKeyName>traceId</excludeMdcKeyName>
+                    <excludeMdcKeyName>spanId</excludeMdcKeyName>
+                    <excludeMdcKeyName>parentId</excludeMdcKeyName>
+                    <excludeMdcKeyName>sampled</excludeMdcKeyName>
+                </mdc>
+            </providers>
+        </encoder>
+    </appender>
+    ​
+    <root level="INFO">
+        <appender-ref ref="jsonConsole"/>
+    </root>
+</configuration>

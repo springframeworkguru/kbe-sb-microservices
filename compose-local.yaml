@@ -1,0 +1,101 @@
+version: '3.8'
+services:
+    mysql:
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: dbpassword
+            MYSQL_DATABASE: beerservice
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+        ports:
+            - 9200:9200
+        environment:
+            discovery.type: single-node
+    kibana:
+        image: docker.elastic.co/kibana/kibana:7.12.1
+        ports:
+            - 5601:5601
+        restart: on-failure
+        depends_on:
+            - elasticsearch
+    filebeat:
+        image: docker.elastic.co/beats/filebeat:7.12.1
+        volumes:
+            - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro # Configuration file
+            - /var/lib/docker/containers:/var/lib/docker/containers:ro           # Docker logs
+            - /var/run/docker.sock:/var/run/docker.sock:ro                       # Additional information about containers
+        user: root                                                             # Allow access to log files and docker.sock
+        restart: on-failure
+    jms:
+        image: vromero/activemq-artemis
+        ports:
+            - 8161:8161
+            - 61616:61616
+    inventory:
+        image: springframeworkguru/kbe-brewery-inventory-service
+        ports:
+            - 8082:8082
+        depends_on:
+            - jms
+        environment:
+            SPRING_DATASOURCE_USER: root
+            SPRING_DATASOURCE_PASSWORD: dbpassword
+            SPRING_JPA_HIBERNATE_DDL-AUTO: update
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_ARTEMIS_HOST: jms
+        restart: on-failure
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"
+    inventory-failover:
+        image: springframeworkguru/kbe-brewery-inventory-failover
+        ports:
+            - 8083:8083
+    beer-service:
+        image: springframeworkguru/kbe-brewery-beer-service
+        ports:
+            - 8080:8080
+        depends_on:
+            - inventory
+            - jms
+        restart: on-failure
+        environment:
+            SPRING_DATASOURCE_USER: root
+            SPRING_DATASOURCE_PASSWORD: dbpassword
+            SPRING_JPA_HIBERNATE_DDL-AUTO: update
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_ARTEMIS_HOST: jms
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"
+    order-service:
+        image: springframeworkguru/kbe-brewery-order-service
+        ports:
+            - 8081:8081
+        depends_on:
+            - beer-service
+            - jms
+        restart: on-failure
+        environment:
+            SPRING_DATASOURCE_USER: root
+            SPRING_DATASOURCE_PASSWORD: dbpassword
+            SPRING_JPA_HIBERNATE_DDL-AUTO: update
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_ARTEMIS_HOST: jms
+            SFG_BREWERY_BEER-SERVICE-HOST: http://beer-service:8080
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"
+    gateway:
+        image: springframeworkguru/kbe-brewery-gateway
+        ports:
+            - 9090:9090
+        depends_on:
+            - inventory
+            - beer-service
+            - order-service
+            - inventory-failover
+        restart: on-failure
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"

@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        resources: {}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: dbpassword
+        - name: MYSQL_ROOT_PASSWORD
+          value: dbpassword
+        ports:
+        - containerPort: 3306
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: elasticsearch
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+        name: elasticsearch
+        resources: {}
+        env:
+        - name: discovery.type
+          value: single-node
+        ports:
+        - containerPort: 9200
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kibana
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - image: docker.elastic.co/kibana/kibana:7.12.1
+        name: kibana
+        resources: {}
+        ports: 
+        - containerPort: 5601
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: jms
+  name: jms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jms
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: jms
+    spec:
+      containers:
+      - image: vromero/activemq-artemis
+        name: activemq-artemis
+        resources: {}
+        ports:
+        - containerPort: 8161
+        - containerPort: 61616
+status: {}
