@@ -65,6 +65,7 @@ services:
             SPRING_JPA_HIBERNATE_DDL-AUTO: update
             SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
             SPRING_ARTEMIS_HOST: jms
+            SFG_BREWERY_BEER-INVENTORY-SERVICE-HOST: http://inventory:8082
         labels:
             collect_logs_with_filebeat: "true"
             decode_log_event_to_json_object: "true"
