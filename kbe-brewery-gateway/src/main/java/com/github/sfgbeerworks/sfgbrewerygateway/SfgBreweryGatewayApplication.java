@@ -18,11 +18,11 @@ public class SfgBreweryGatewayApplication {
 
         return builder.routes()
                 .route("beer-service", r -> r.path("/api/v1/beer/*", "/api/v1/beerUpc/*")
-                        .uri("http://beer:8080"))
+                        .uri("http://beer-service:8080"))
                 .route("inventory-service", r -> r.path("/api/v1/beer/*/inventory")
-                        .uri("http://inventory:8082"))
+                        .uri("http://inventory-service:8082"))
                 .route("order-service", r -> r.path(("/api/v1/customers/**"))
-                        .uri("http://order:8081"))
+                        .uri("http://order-service:8081"))
                 .build();
     }
 
