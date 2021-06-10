@@ -21,8 +21,11 @@ import guru.sfg.brewery.beer_service.domain.Brewery;
 import guru.sfg.brewery.beer_service.repositories.BeerRepository;
 import guru.sfg.brewery.beer_service.repositories.BreweryRepository;
 import guru.sfg.brewery.model.BeerStyleEnum;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class DefaultBreweryLoader implements CommandLineRunner {
 
     public static final String BEER_1_UPC = "0631234200036";
@@ -48,13 +52,8 @@ public class DefaultBreweryLoader implements CommandLineRunner {
 
     private final BreweryRepository breweryRepository;
     private final BeerRepository beerRepository;
+    private final CacheManager cacheManager;
 
-
-    public DefaultBreweryLoader(BreweryRepository breweryRepository,
-                                BeerRepository beerRepository) {
-        this.breweryRepository = breweryRepository;
-        this.beerRepository = beerRepository;
-    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -63,8 +62,11 @@ public class DefaultBreweryLoader implements CommandLineRunner {
         loadBreweryData();
         loadBeerData();
 
+        cacheManager.getCache("beerListCache").clear();
         log.debug("Data Initialized. Beer Records loaded {}", beerRepository.count());
     }
+
+
 
     private void loadBeerData() {
 
@@ -142,7 +144,7 @@ public class DefaultBreweryLoader implements CommandLineRunner {
                 .upc(BEER_8_UPC)
                 .build());
 
-        beerRepository.save(Beer.builder()
+        beerRepository.saveAndFlush(Beer.builder()
                 .beerName("Grand Central")
                 .beerStyle(BeerStyleEnum.ALE)
                 .minOnHand(12)
