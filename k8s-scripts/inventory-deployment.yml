@@ -32,4 +32,24 @@ spec:
             value: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
           - name: SPRING_ARTEMIS_HOST
             value: jms
+          - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+            value: "true"
+          - name: MANAGEMENT_HEALTH_READINESSTATE_ENABLED
+            value: "true"
+          - name: MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED
+            value: "true"
+        readinessProbe:
+          httpGet:
+            port: 8082
+            path: /actuator/health/readiness
+        livenessProbe:
+          httpGet:
+            port: 8082
+            path: /actuator/health/liveness
 status: {}
+
+
+
+
+
+
