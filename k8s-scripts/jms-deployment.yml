@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: jms
+  name: jms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jms
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: jms
+    spec:
+      containers:
+      - image: vromero/activemq-artemis
+        name: activemq-artemis
+        resources: {}
+status: {}

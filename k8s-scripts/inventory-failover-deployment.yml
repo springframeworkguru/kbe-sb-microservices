@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: inventory-failover
+  name: inventory-failover
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-failover
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: inventory-failover
+    spec:
+      containers:
+      - image: springframeworkguru/kbe-brewery-inventory-failover
+        name: kbe-brewery-inventory-failover
+        resources: {}
+status: {}

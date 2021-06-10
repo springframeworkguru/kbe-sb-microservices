@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: order-service
+  name: order-service
+spec:
+  ports:
+  - name: 8081-8081
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: order-service
+  type: ClusterIP
+status:
+  loadBalancer: {}
