@@ -12,18 +12,17 @@ data:
       providers:
         - type: kubernetes
           node: ${NODE_NAME}
-          templates:
-            - condition:
-                contains:
-                  kubernetes.labels.collect_logs_with_filebeat: "true"
-              config:
-                - type: container
-                  paths:
-                    - "/var/log/containers/*-${data.kubernetes.container.id}.log"
-                  json.keys_under_root: true
-                  json.add_error_key: true
-                  json.message_key: message
-
+          hints.enabled: true
+          hints.default_config.enabled: false
+          hints.default_config:
+            type: container
+            paths:
+              - /var/log/containers/*${data.kubernetes.container.id}.log
+            processors:
+                - decode_json_fields:
+                      fields: ["message"]
+                      target: ""
+                      overwrite_keys: true
     processors:
       - add_cloud_metadata:
       - add_host_metadata:

@@ -4,12 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: beer-service
-    collect_logs_with_filebeat: "true"
   name: beer-service
-  annotations:
-    co.elastic.logs.json-logging/json.keys_under_root: "true"
-    co.elastic.logs.json-logging/json.add_error_key: "true"
-    co.elastic.logs.json-logging/json.message_key: "message"
 spec:
   replicas: 1
   selector:
@@ -21,6 +16,11 @@ spec:
       creationTimestamp: null
       labels:
         app: beer-service
+      annotations:
+        co.elastic.logs/enabled: "true"
+        co.elastic.logs.json-logging/json.keys_under_root: "true"
+        co.elastic.logs.json-logging/json.add_error_key: "true"
+        co.elastic.logs.json-logging/json.message_key: "message"
     spec:
       containers:
       - image: springframeworkguru/kbe-brewery-beer-service
