@@ -23,7 +23,8 @@ spec:
         co.elastic.logs.json-logging/json.message_key: "message"
     spec:
       containers:
-      - image: springframeworkguru/kbe-brewery-inventory-failover
+      - image: kbe-brewery-inventory-failover:1.0-SNAPSHOT
+        imagePullPolicy: Never
         name: kbe-brewery-inventory-failover
         resources: {}
 status: {}

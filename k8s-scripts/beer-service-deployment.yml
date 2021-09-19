@@ -23,11 +23,12 @@ spec:
         co.elastic.logs.json-logging/json.message_key: "message"
     spec:
       containers:
-      - image: springframeworkguru/kbe-brewery-beer-service
+      - image: kbe-brewery-beer-service:1.0-SNAPSHOT
+        imagePullPolicy: Never
         name: kbe-brewery-beer-service
         resources: {}
         env:
-          - name: SPRING_DATASOURCE_USER
+          - name: SPRING_DATASOURCE_USERNAME
             value: root
           - name: SPRING_DATASOURCE_PASSWORD
             value: dbpassword
