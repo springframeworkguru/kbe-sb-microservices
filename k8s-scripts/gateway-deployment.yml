@@ -18,7 +18,8 @@ spec:
         app: gateway
     spec:
       containers:
-      - image: springframeworkguru/kbe-brewery-gateway
+      - image: kbe-brewery-gateway:1.0-SNAPSHOT
+        imagePullPolicy: Never
         name: kbe-brewery-gateway
         resources: {}
 status: {}
